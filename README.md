@@ -1,3 +1,8 @@
+Nama: Maria Imakulata Tecira
+NIM: 245410043
+
+
+
 1. Teorema CAP dan BASE
 Teorema CAP
 Teorema CAP (Consistency, Availability, Partition Tolerance) menyatakan bahwa dalam sistem terdistribusi, kita hanya dapat memilih dua dari tiga aspek berikut:
@@ -43,4 +48,36 @@ komunikasi antar proses dalam sistem terdistribusi.
 Streaming Replication di PostgreSQL Windows 
 https://www.crunchydata.com/blog/postgres-streaming-replication-on-windows-a-quick-guide
 Persiapan Awal
-Aktifkan Docker Desktop: 
+1. Aktifkan Docker Desktop: Pastikan Docker Desktop sudah terpasang dan berjalan di sistem Windows Anda.
+2. Struktur Direktori dan File
+Periksa Struktur Direktori: Pastikan Anda memiliki struktur direktori yang sesuai untuk menyimpan konfigurasi dan data PostgreSQL.
+Periksa File Docker: Pastikan file-file Docker (seperti docker-compose.yml) sudah ada dan terkonfigurasi dengan benar.
+3. Tentukan Variabel
+Konfigurasi Variabel: Tentukan variabel-variabel yang diperlukan untuk konfigurasi Docker dan PostgreSQL, seperti nama database, username, password, dan lain-lain.
+4. Membuat Jaringan dan Volume Docker
+Buat Jaringan Docker: Buat jaringan Docker untuk menghubungkan container primary dan standby.
+Buat Volume Docker: Buat volume Docker untuk menyimpan data PostgreSQL agar tetap persisten meskipun container di-restart.
+5. Jalankan Node Primary
+Jalankan Container Primary: Gunakan Docker Compose atau perintah Docker lainnya untuk menjalankan container PostgreSQL sebagai node primary.
+6. Konfigurasi Node Primary untuk Replikasi
+Ubah Konfigurasi postgresql.conf:
+Edit file postgresql.conf di direktori data node primary.
+Pastikan parameter seperti wal_level, listen_addresses, dan max_wal_senders sudah dikonfigurasi dengan benar untuk mendukung replikasi.
+Ubah Konfigurasi pg_hba.conf:
+Edit file pg_hba.conf untuk mengizinkan koneksi dari node standby ke node primary untuk keperluan replikasi.
+Restart Node Primary: Setelah mengubah konfigurasi, restart container node primary agar perubahan diterapkan.
+7. Buat Slot Replikasi
+Buat Slot Replikasi di Primary: Gunakan perintah SQL untuk membuat slot replikasi di node primary. Slot replikasi ini akan digunakan oleh node standby untuk menerima perubahan dari primary.
+8. Cloning Database ke Node Standby
+Clone Database: Gunakan utilitas seperti pg_basebackup untuk meng-clone database dari node primary ke node standby.
+9. Jalankan Node Standby (Database Cadangan)
+Jalankan Container Standby: Gunakan Docker Compose atau perintah Docker lainnya untuk menjalankan container PostgreSQL sebagai node standby.
+Konfigurasi Standby: Pastikan node standby terkonfigurasi untuk terhubung ke node primary dan menggunakan slot replikasi yang telah dibuat.
+10. Uji Coba dan Verifikasi Replikasi
+Cek Status di Primary: Periksa status replikasi di node primary untuk memastikan node standby terhubung dan menerima perubahan.
+Buat Data di Primary: Buat data baru di node primary (misalnya, membuat tabel atau memasukkan data ke dalam tabel).
+Baca Data di Standby: Periksa node standby untuk memastikan data yang baru dibuat di primary sudah direplikasi ke standby.
+Tes Gagal Tulis di Standby: Coba lakukan operasi tulis di node standby. Karena standby seharusnya hanya menerima replikasi, operasi tulis akan gagal.
+11. Skenario Kasus yang Sempurna untuk Menguji Replikasi
+Buat Tabel Mahasiswa di PRIMARY: Buat tabel bernama mahasiswa di node primary dan masukkan beberapa data ke dalamnya.
+Verifikasi di Standby: Periksa node standby untuk memastikan tabel mahasiswa dan datanya sudah direplikasi dengan benar.
